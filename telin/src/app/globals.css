@@ -1,0 +1,372 @@
+@import "tailwindcss";
+
+/* ───────────────────────── CSS Custom Properties ───────────────────────── */
+:root {
+  --color-void: #030705;
+  --color-ink: #070d09;
+  --color-panel: #0b1410;
+  --color-panel-trans: rgba(11, 20, 16, 0.88);
+  --color-fg: #e2ede6;
+  --color-fg-bright: #ffffff;
+  --color-mute: #8fa597;
+  --color-faint: #4e6356;
+  --color-neon: #3dff9a;
+  --color-neon-dim: #26b56f;
+  --color-cyan: #5ce1e6;
+  --color-danger: #ff5c77;
+  --color-amber: #ffc861;
+  --color-line: rgba(61, 255, 154, 0.15);
+  --color-line-strong: rgba(61, 255, 154, 0.35);
+  --color-line-faint: rgba(255, 255, 255, 0.08);
+}
+
+@theme {
+  --color-void: #030705;
+  --color-ink: #070d09;
+  --color-panel: #0b1410;
+  --color-fg: #e2ede6;
+  --color-mute: #8fa597;
+  --color-faint: #4e6356;
+  --color-neon: #3dff9a;
+  --color-neon-dim: #26b56f;
+  --color-cyan: #5ce1e6;
+  --color-danger: #ff5c77;
+  --color-amber: #ffc861;
+  --color-line: rgba(61, 255, 154, 0.15);
+  --color-line-strong: rgba(61, 255, 154, 0.35);
+}
+
+/* ───────────────────────── Base Resets ───────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+  background-color: var(--color-void);
+}
+
+body {
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-fg);
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ambient dark-cyber background glow and grid */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 65% 45% at 50% -5%, rgba(61, 255, 154, 0.12), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(92, 225, 230, 0.06), transparent 70%),
+    linear-gradient(rgba(61, 255, 154, 0.03) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(61, 255, 154, 0.03) 1px, transparent 1px) 0 0 / 40px 40px;
+}
+
+/* subtle scanlines */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 3px);
+  mix-blend-mode: overlay;
+}
+
+svg {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+::selection {
+  background: var(--color-neon);
+  color: #000;
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-neon);
+  outline-offset: 3px;
+}
+
+/* ───────────────────────── Direct UI Component Styles ───────────────────────── */
+.panel {
+  position: relative;
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  background: var(--color-panel-trans);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 24px 60px -20px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.corners {
+  position: relative;
+}
+.corners::before,
+.corners::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--color-neon);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.corners::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+  border-top-left-radius: 12px;
+}
+.corners::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+  border-bottom-right-radius: 12px;
+}
+
+.label {
+  font-family: var(--font-jetbrains), ui-monospace, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-mute);
+}
+
+.rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-line-strong), transparent);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0 1.25rem;
+  border-radius: 8px;
+  font-family: var(--font-jetbrains), ui-monospace, Menlo, monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: all 0.18s ease;
+  user-select: none;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  color: #01140a;
+  background: linear-gradient(180deg, #5effb2, var(--color-neon));
+  border: 1px solid var(--color-neon);
+  box-shadow:
+    0 0 24px -4px rgba(61, 255, 154, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.btn-primary:hover:not(:disabled) {
+  box-shadow:
+    0 0 32px 0 rgba(61, 255, 154, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  color: var(--color-neon);
+  background: rgba(61, 255, 154, 0.05);
+  border: 1px solid var(--color-line-strong);
+}
+.btn-ghost:hover:not(:disabled) {
+  background: rgba(61, 255, 154, 0.12);
+  border-color: rgba(61, 255, 154, 0.6);
+  box-shadow: 0 0 20px -4px rgba(61, 255, 154, 0.35);
+}
+
+.btn-quiet {
+  color: var(--color-mute);
+  border: 1px solid var(--color-line-faint);
+  background: rgba(255, 255, 255, 0.02);
+}
+.btn-quiet:hover:not(:disabled) {
+  color: var(--color-fg-bright);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.field {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--color-line);
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--color-fg);
+  font-family: inherit;
+  caret-color: var(--color-neon);
+  transition: all 0.2s ease;
+}
+.field::placeholder {
+  color: var(--color-faint);
+}
+.field:focus {
+  outline: none;
+  border-color: rgba(61, 255, 154, 0.6);
+  box-shadow:
+    0 0 0 3px rgba(61, 255, 154, 0.12),
+    0 0 24px -6px rgba(61, 255, 154, 0.4);
+}
+
+.option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 48px;
+  padding: 0 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-line-faint);
+  background: rgba(255, 255, 255, 0.02);
+  font-family: var(--font-jetbrains), ui-monospace, Menlo, monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  color: var(--color-mute);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.option:hover {
+  border-color: var(--color-line-strong);
+  color: var(--color-fg);
+}
+.option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.option .dot {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  border-radius: 999px;
+  border: 1px solid var(--color-faint);
+  transition: all 0.2s ease;
+}
+.option:has(input:checked) {
+  color: var(--color-neon);
+  border-color: rgba(61, 255, 154, 0.55);
+  background: rgba(61, 255, 154, 0.08);
+  box-shadow: inset 0 0 16px -6px rgba(61, 255, 154, 0.4);
+}
+.option:has(input:checked) .dot {
+  border-color: var(--color-neon);
+  background: radial-gradient(circle, var(--color-neon) 0 3px, transparent 4px);
+  box-shadow: 0 0 8px var(--color-neon);
+}
+
+.glow-text {
+  color: var(--color-neon);
+  text-shadow: 0 0 16px rgba(61, 255, 154, 0.4);
+}
+
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-neon);
+  box-shadow: 0 0 8px var(--color-neon);
+}
+
+/* ───────────────────────── Animations ───────────────────────── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes glitch {
+  0% {
+    opacity: 1;
+    transform: none;
+  }
+  20% {
+    transform: translate(-3px, 1px);
+    opacity: 0.8;
+  }
+  40% {
+    transform: translate(3px, -1px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+@keyframes shake {
+  20%, 60% {
+    transform: translateX(-5px);
+  }
+  40%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.delay-1 { animation-delay: 0.06s; }
+.delay-2 { animation-delay: 0.12s; }
+.delay-3 { animation-delay: 0.18s; }
+.delay-4 { animation-delay: 0.24s; }
+.delay-5 { animation-delay: 0.30s; }
+.delay-6 { animation-delay: 0.36s; }
+
+.caret::after {
+  content: "▍";
+  margin-left: 3px;
+  color: var(--color-neon);
+  animation: blink 1s steps(1) infinite;
+}
+
+.animate-glitch {
+  animation: glitch 0.5s ease forwards;
+}
+.animate-shake {
+  animation: shake 0.35s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
