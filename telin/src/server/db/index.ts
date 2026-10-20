@@ -5,11 +5,24 @@ const SWEEP_INTERVAL_MS = 60_000;
 
 const g = globalThis as unknown as { __telinStore?: Promise<DropStore>; __telinSweeper?: NodeJS.Timeout };
 
+function getPostgresUrl(): string | undefined {
+  return (
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.DATABASES_POSTGRES_URL ||
+    process.env.DATABASES_DATABASE_URL_UNPOOLED ||
+    process.env.POSTGRES_PRISMA_URL ||
+    process.env.POSTGRES_URL_NON_POOLING ||
+    process.env.DATABASE_URL_UNPOOLED
+  );
+}
+
 async function init(): Promise<DropStore> {
   let store: DropStore;
-  if (process.env.DATABASE_URL) {
+  const dbUrl = getPostgresUrl();
+  if (dbUrl) {
     const { createPostgresStore } = await import("./postgres");
-    store = createPostgresStore(process.env.DATABASE_URL);
+    store = createPostgresStore(dbUrl);
   } else {
     const { createSqliteStore } = await import("./sqlite");
     store = createSqliteStore();

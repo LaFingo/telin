@@ -59,7 +59,10 @@ export default function CreateDrop() {
         }),
       });
       if (res.status === 429) throw new Error("Troppe richieste. Riprova tra qualche minuto.");
-      if (!res.ok) throw new Error("Impossibile creare il drop. Riprova.");
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null);
+        throw new Error(errJson?.message || errJson?.details || errJson?.error || "Impossibile creare il drop. Riprova.");
+      }
       const { id, expiresAt } = (await res.json()) as { id: string; expiresAt: number };
       // The secret goes ONLY in the fragment (#...), which browsers never send to servers.
       return { url: `${window.location.origin}/d/${id}#${toB64u(s.secret)}`, expiresAt };
