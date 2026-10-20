@@ -17,25 +17,38 @@ export function createPostgresStore(url: string): DropStore {
     ssl: isLocal ? false : { rejectUnauthorized: false },
   });
 
-  const ready = pool.query(`
-    CREATE TABLE IF NOT EXISTS drops (
-      id              TEXT PRIMARY KEY,
-      ciphertext      BYTEA   NOT NULL,
-      iv              BYTEA   NOT NULL,
-      salt            BYTEA   NOT NULL,
-      verifier        BYTEA   NOT NULL,
-      has_code        BOOLEAN NOT NULL,
-      mode            TEXT    NOT NULL CHECK (mode IN ('once','timed')),
-      failed_attempts INTEGER NOT NULL DEFAULT 0,
-      created_at      BIGINT  NOT NULL,
-      expires_at      BIGINT  NOT NULL
-    );
-    CREATE INDEX IF NOT EXISTS drops_expires_at ON drops (expires_at);
-  `);
+  let initPromise: Promise<void> | null = null;
+  function ensureReady(): Promise<void> {
+    if (!initPromise) {
+      initPromise = (async () => {
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS drops (
+            id              TEXT PRIMARY KEY,
+            ciphertext      BYTEA   NOT NULL,
+            iv              BYTEA   NOT NULL,
+            salt            BYTEA   NOT NULL,
+            verifier        BYTEA   NOT NULL,
+            has_code        BOOLEAN NOT NULL,
+            mode            TEXT    NOT NULL CHECK (mode IN ('once','timed')),
+            failed_attempts INTEGER NOT NULL DEFAULT 0,
+            created_at      BIGINT  NOT NULL,
+            expires_at      BIGINT  NOT NULL
+          );
+        `);
+        await pool.query(`
+          CREATE INDEX IF NOT EXISTS drops_expires_at ON drops (expires_at);
+        `);
+      })().catch((err) => {
+        initPromise = null;
+        throw err;
+      });
+    }
+    return initPromise;
+  }
 
   return {
     async create(d: NewDrop) {
-      await ready;
+      await ensureReady();
       await pool.query(
         `INSERT INTO drops (id, ciphertext, iv, salt, verifier, has_code, mode, created_at, expires_at)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
@@ -44,7 +57,7 @@ export function createPostgresStore(url: string): DropStore {
     },
 
     async getMeta(id, now): Promise<DropMeta | null> {
-      await ready;
+      await ensureReady();
       const { rows } = await pool.query(
         `SELECT has_code, salt, mode, expires_at FROM drops WHERE id = $1 AND expires_at > $2`,
         [id, now],
@@ -55,7 +68,7 @@ export function createPostgresStore(url: string): DropStore {
     },
 
     async open(id, tokenHash, now): Promise<OpenResult> {
-      await ready;
+      await ensureReady();
       const c = await pool.connect();
       try {
         await c.query("BEGIN");
@@ -103,7 +116,7 @@ export function createPostgresStore(url: string): DropStore {
     },
 
     async sweep(now) {
-      await ready;
+      await ensureReady();
       const res = await pool.query(`DELETE FROM drops WHERE expires_at <= $1`, [now]);
       return res.rowCount ?? 0;
     },

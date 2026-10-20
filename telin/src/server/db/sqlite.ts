@@ -24,7 +24,10 @@ interface Row {
  * - The WAL is truncated after every sweep so deleted pages do not linger there.
  * Physical erasure on SSDs/filesystems cannot be guaranteed by any application.
  */
-export function createSqliteStore(file = process.env.SQLITE_PATH ?? path.join(process.cwd(), "data", "telin.db")): DropStore {
+export function createSqliteStore(
+  file = process.env.SQLITE_PATH ??
+    (process.env.VERCEL ? path.join("/tmp", "telin.db") : path.join(process.cwd(), "data", "telin.db")),
+): DropStore {
   mkdirSync(path.dirname(file), { recursive: true });
   const db = new DatabaseSync(file);
   db.exec(`
