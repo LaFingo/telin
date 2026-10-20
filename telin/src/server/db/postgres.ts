@@ -10,7 +10,12 @@ import type { DropMeta, DropStore, NewDrop, OpenResult } from "./types";
  * enabled (default). Physical erasure cannot be guaranteed by the application.
  */
 export function createPostgresStore(url: string): DropStore {
-  const pool = new Pool({ connectionString: url, max: 10 });
+  const isLocal = url.includes("localhost") || url.includes("127.0.0.1");
+  const pool = new Pool({
+    connectionString: url,
+    max: 10,
+    ssl: isLocal ? false : { rejectUnauthorized: false },
+  });
 
   const ready = pool.query(`
     CREATE TABLE IF NOT EXISTS drops (
