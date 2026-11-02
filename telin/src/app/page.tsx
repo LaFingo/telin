@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LockIcon } from "@/components/icons";
 
 const STATUS = [
+  ["author", "BORIS IVANOV BACHEV"],
   ["encryption", "ACTIVE · AES-256-GCM"],
   ["keys", "CLIENT-SIDE ONLY"],
   ["storage", "ENCRYPTED"],

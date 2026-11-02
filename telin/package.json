@@ -1,6 +1,7 @@
 {
   "name": "telin",
   "version": "0.1.0",
+  "author": "Boris Ivanov Bachev",
   "private": true,
   "scripts": {
     "dev": "next dev",

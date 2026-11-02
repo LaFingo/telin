@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   title: "TELIN — Private Drop · Messaggi che non restano",
   description:
     "Scrivi un messaggio, cifralo nel tuo browser e condividi un link che si autodistrugge dopo la lettura. Nessun account, nessuna cronologia, zero messaggi in chiaro sul server.",
+  authors: [{ name: "Boris Ivanov Bachev" }],
+  creator: "Boris Ivanov Bachev",
   referrer: "no-referrer",
   robots: { index: true, follow: false },
   formatDetection: { telephone: false, email: false, address: false },
@@ -55,6 +57,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <div className="flex flex-col items-center justify-between gap-2 font-mono text-[10px] tracking-[0.22em] text-faint sm:flex-row">
             <span>THE SERVER STORES DATA, NOT KNOWLEDGE.</span>
             <span>NO ACCOUNT · NO ANALYTICS · NO COOKIES</span>
+          </div>
+          <div className="mt-3.5 flex items-center justify-center gap-1.5 font-mono text-[10.5px] tracking-[0.22em] text-mute">
+            <span>CREATO DA</span>
+            <span className="font-semibold text-neon drop-shadow-[0_0_8px_rgba(61,255,154,0.3)]">BORIS IVANOV BACHEV</span>
           </div>
         </footer>
       </body>
